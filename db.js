@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 require("express-async-errors");
 const dbConnection = process.env.DB_URI || "mongodb://localhost/todo";
-console.log(dbConnection);
 mongoose
   .connect(dbConnection, {
     autoIndex: true,

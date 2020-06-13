@@ -3,6 +3,11 @@ const {
   state: { TODO, IN_PROGRESS, DONE },
 } = require("../constants/todoConstants");
 const { Schema } = mongoose;
+const assigneeSchema = {
+  type: mongoose.ObjectId,
+  ref: "User",
+};
+
 const stateSchema = {
   type: String,
   default: TODO,
@@ -15,6 +20,7 @@ const stateSchema = {
 const historySchema = new Schema(
   {
     state: stateSchema,
+    assignee: assigneeSchema,
     date: { type: Date, default: Date.now },
   },
   { _id: false }
@@ -23,19 +29,17 @@ const historySchema = new Schema(
 const todoSchema = new Schema({
   title: { type: String, required: true },
   description: { type: String, required: true },
-  user: {
-    type: mongoose.ObjectId,
-    ref: "User",
-  },
   state: stateSchema,
+  assignee: assigneeSchema,
   dueDate: { type: Date },
-  history: { type: [historySchema], default: [] },
   deleted: { type: Boolean, default: false },
+  history: { type: [historySchema], default: [] },
 });
 
 const Todo = mongoose.model("Todo", todoSchema);
 todoSchema.pre("save", function (next) {
-  this._doc.history.push(this._doc.state);
+  const { state, assignee } = this._doc;
+  this._doc.history.push({ state, assignee });
   next();
 });
 

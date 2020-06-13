@@ -4,4 +4,5 @@ module.exports = {
     IN_PROGRESS: "inProgress",
     DONE: "done",
   },
+  TODO_PER_PAGE: 5,
 };
