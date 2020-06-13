@@ -34,5 +34,9 @@ const todoSchema = new Schema({
 });
 
 const Todo = mongoose.model("Todo", todoSchema);
+todoSchema.pre("save", function (next) {
+  this._doc.history.push(this._doc.state);
+  next();
+});
 
 module.exports = Todo;
