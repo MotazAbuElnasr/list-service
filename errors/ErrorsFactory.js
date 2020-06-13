@@ -15,4 +15,8 @@ module.exports = (modelName) => ({
     new CustomError(404, "NOT_FOUND", `${modelName} of id ${id} doesn't exist`),
   UnProccessableEntityError: () =>
     new CustomError(422, "INVALID_DATA", "Invalid request data"),
+  AuthorizationError: (message) =>
+    new CustomError(403, "UNAUTHORIZED", message),
+  AuthenticationError: (message) =>
+    new CustomError(401, "AUTHENTICATION", message),
 });

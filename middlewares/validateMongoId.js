@@ -8,5 +8,5 @@ const validateMongoId = (idSource) => (properyName) => (req, res, next) =>
     : throwError(UnProccessableEntityError());
 
 module.exports = {
-  validateMongoIdFromParams: validateMongoId("params"),
+  fromParams: validateMongoId("params"),
 };
