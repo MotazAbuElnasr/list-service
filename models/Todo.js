@@ -38,7 +38,6 @@ const todoSchemaWithHistory = new Schema({
 });
 
 todoSchemaWithHistory.pre("save", function (next, { _originalDoc }) {
-  const ohYea = mongoose;
   this._doc.state = this.isNew ? TODO : this._doc.state;
   if (_originalDoc) this._doc.history.push(_originalDoc);
   next();
