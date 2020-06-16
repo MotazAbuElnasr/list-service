@@ -15,14 +15,10 @@ const authorizeTodoOwner = authorizeOwner({
   Model: Todo,
   userIdPath: "assignee",
 });
-
-const todoPicker = pick([
-  "title",
-  "description",
-  "state",
-  "assignee",
-  "dueDate",
-]);
+const todoBasicAttr = ["title", "description", "state", "assignee", "dueDate"];
+const todoPicker = pick(todoBasicAttr);
+const deletedTodoPicker = pick(["deleted"]);
+const originalTodoPicker = pick([...todoBasicAttr, "deleted"]);
 
 router.get("/", async function (req, res, next) {
   const lastId = req.query.lastId;
@@ -56,8 +52,9 @@ router.patch(
   authorizeTodoOwner("params.id"),
   async (req, res, next) => {
     Object.assign(req.body, { assignee: req.user._id });
+    const _originalDoc = originalTodoPicker(req.requestedDoc);
     Object.assign(req.requestedDoc, { ...todoPicker(req.body) });
-    const newDoc = await req.requestedDoc.save();
+    const newDoc = await req.requestedDoc.save({ _originalDoc });
     res.json(newDoc);
   }
 );
@@ -68,9 +65,10 @@ router.delete(
   authenticate,
   authorizeTodoOwner("params.id"),
   async (req, res, next) => {
-    const todoData = pick(["deleted"])(req.body);
+    const todoData = deletedTodoPicker(req.body);
+    const _originalDoc = originalTodoPicker(req.requestedDoc);
     Object.assign(req.requestedDoc, { ...todoData });
-    const newDoc = await req.requestedDoc.save();
+    const newDoc = await req.requestedDoc.save({ _originalDoc });
     res.json(newDoc);
   }
 );

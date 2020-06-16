@@ -16,32 +16,33 @@ const stateSchema = {
     message: "INVALID_STATE",
   },
 };
-
-const historySchema = new Schema(
-  {
-    state: stateSchema,
-    assignee: assigneeSchema,
-    date: { type: Date, default: Date.now },
-  },
-  { _id: false }
-);
-const todoSchema = new Schema({
+const todoSchema = {
   title: { type: String, required: true },
   description: { type: String, required: true },
   state: stateSchema,
   assignee: assigneeSchema,
   dueDate: { type: Date },
   deleted: { type: Boolean, default: false },
+};
+
+const historySchema = new Schema(
+  {
+    ...todoSchema,
+    date: { type: Date, default: Date.now },
+  },
+  { _id: false }
+);
+const todoSchemaWithHistory = new Schema({
+  ...todoSchema,
   history: { type: [historySchema], default: [] },
 });
 
-todoSchema.pre("save", function (next) {
-  debugger;
-  const { assignee } = this._doc;
-  const state = this.isNew ? TODO : this._doc.state;
-  this._doc.history.push({ state, assignee });
+todoSchemaWithHistory.pre("save", function (next, { _originalDoc }) {
+  const ohYea = mongoose;
+  this._doc.state = this.isNew ? TODO : this._doc.state;
+  if (_originalDoc) this._doc.history.push(_originalDoc);
   next();
 });
-const Todo = mongoose.model("Todo", todoSchema);
+const Todo = mongoose.model("Todo", todoSchemaWithHistory);
 
 module.exports = Todo;
