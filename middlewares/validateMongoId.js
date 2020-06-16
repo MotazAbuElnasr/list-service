@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { get, throwError } = require("verylodash");
-const { UnProccessableEntityError } = require("../errors/ErrorsFactory")();
+const { UnProccessableEntityError } = require("node-errors-factory")();
 
 const validateMongoId = (idSource) => ({ property, optional }) => (
   req,

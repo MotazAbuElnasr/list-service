@@ -3,10 +3,10 @@ var router = express.Router();
 const Todo = require("../models/Todo");
 const { TODO_PER_PAGE } = require("../constants/todoConstants");
 const { pick } = require("verylodash");
-const { NotFoundError: TodoNotFoundError } = require("../errors/ErrorsFactory")(
+const { NotFoundError: TodoNotFoundError } = require("node-errors-factory")(
   "Todo"
 );
-const { NotFoundError: UserNotFoundError } = require("../errors/ErrorsFactory")(
+const { NotFoundError: UserNotFoundError } = require("node-errors-factory")(
   "User"
 );
 const {

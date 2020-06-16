@@ -1,6 +1,6 @@
 const { get } = require("verylodash");
-const { AuthorizationError } = require("../errors/ErrorsFactory")();
-const errorFactory = require("../errors/ErrorsFactory");
+const { AuthorizationError } = require("node-errors-factory")();
+const errorFactory = require("node-errors-factory");
 module.exports = ({ Model, userIdPath }) => (docIdPathFromReq) => async (
   req,
   res,
