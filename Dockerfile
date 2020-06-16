@@ -5,7 +5,10 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install && \
+RUN apk --update add git \
+    --repository https://alpine.global.ssl.fastly.net/alpine/v3.10/community \
+    --repository https://alpine.global.ssl.fastly.net/alpine/v3.10/main && \
+    npm install && \
     npm audit fix 
 
 COPY . .
