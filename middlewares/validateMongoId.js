@@ -2,11 +2,18 @@ const mongoose = require("mongoose");
 const { get, throwError } = require("../helpers/generalHelpers");
 const { UnProccessableEntityError } = require("../errors/ErrorsFactory")();
 
-const validateMongoId = (idSource) => (properyName) => (req, res, next) =>
-  mongoose.isValidObjectId(get(`${idSource}.${properyName}`)(req))
+const validateMongoId = (idSource) => ({ property, optional }) => (
+  req,
+  res,
+  next
+) => {
+  const id = get(`${idSource}.${property}`)(req);
+  if (!id && optional) return next();
+  return mongoose.isValidObjectId(id)
     ? next()
     : throwError(UnProccessableEntityError());
-
+};
 module.exports = {
   fromParams: validateMongoId("params"),
+  fromBody: validateMongoId("body"),
 };

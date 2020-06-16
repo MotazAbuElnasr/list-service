@@ -3,13 +3,18 @@ var router = express.Router();
 const Todo = require("../models/Todo");
 const { TODO_PER_PAGE } = require("../constants/todoConstants");
 const { pick } = require("../helpers/generalHelpers");
-const { NotFoundError } = require("../errors/ErrorsFactory")("Todo");
-
+const { NotFoundError: TodoNotFoundError } = require("../errors/ErrorsFactory")(
+  "Todo"
+);
+const { NotFoundError: UserNotFoundError } = require("../errors/ErrorsFactory")(
+  "User"
+);
 const {
   validateMongoId,
   authenticate,
   authorizeOwner,
 } = require("../middlewares");
+const { doesUserExist } = require("../helpers/todoHelpers");
 
 const authorizeTodoOwner = authorizeOwner({
   Model: Todo,
@@ -28,16 +33,16 @@ router.get("/", async function (req, res, next) {
   res.json({ todos, count });
 });
 
-router.get("/:id", validateMongoId.fromParams("id"), async function (
-  req,
-  res,
-  next
-) {
-  const _id = req.params.id;
-  const todo = await Todo.findById(_id);
-  if (!todo) throw NotFoundError(_id);
-  res.json(todo);
-});
+router.get(
+  "/:id",
+  validateMongoId.fromParams({ property: "id" }),
+  async function (req, res, next) {
+    const _id = req.params.id;
+    const todo = await Todo.findById(_id);
+    if (!todo) throw TodoNotFoundError(_id);
+    res.json(todo);
+  }
+);
 
 router.post("/", authenticate, async (req, res, next) => {
   Object.assign(req.body, { assignee: req.user._id });
@@ -47,11 +52,14 @@ router.post("/", authenticate, async (req, res, next) => {
 
 router.patch(
   "/:id",
-  validateMongoId.fromParams("id"),
+  validateMongoId.fromParams({ property: "id" }),
+  validateMongoId.fromBody({ property: "assignee", optional: true }),
   authenticate,
   authorizeTodoOwner("params.id"),
   async (req, res, next) => {
-    Object.assign(req.body, { assignee: req.user._id });
+    const { assignee } = req.body;
+    if (assignee && !(await doesUserExist(assignee)))
+      throw UserNotFoundError(assignee);
     const _originalDoc = originalTodoPicker(req.requestedDoc);
     Object.assign(req.requestedDoc, { ...todoPicker(req.body) });
     const newDoc = await req.requestedDoc.save({ _originalDoc });
@@ -61,7 +69,7 @@ router.patch(
 
 router.delete(
   "/:id",
-  validateMongoId.fromParams("id"),
+  validateMongoId.fromParams({ property: "id" }),
   authenticate,
   authorizeTodoOwner("params.id"),
   async (req, res, next) => {

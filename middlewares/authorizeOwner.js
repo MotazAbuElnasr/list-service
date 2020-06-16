@@ -1,5 +1,3 @@
-const jwt = require("jsonwebtoken");
-const { promisify } = require("util");
 const { get } = require("../helpers/generalHelpers");
 const { AuthorizationError } = require("../errors/ErrorsFactory")();
 const errorFactory = require("../errors/ErrorsFactory");
