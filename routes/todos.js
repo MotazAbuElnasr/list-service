@@ -12,7 +12,7 @@ const {
 } = require("../middlewares");
 
 const authorizeTodoOwner = authorizeOwner({
-  model: Todo,
+  Model: Todo,
   userIdPath: "assignee",
 });
 
@@ -22,7 +22,6 @@ const todoPicker = pick([
   "state",
   "assignee",
   "dueDate",
-  "deleted",
 ]);
 
 router.get("/", async function (req, res, next) {
@@ -54,16 +53,12 @@ router.patch(
   "/:id",
   validateMongoId.fromParams("id"),
   authenticate,
-  authorizeTodoOwner("user._id"),
+  authorizeTodoOwner("params.id"),
   async (req, res, next) => {
-    const _id = req.params.id;
     Object.assign(req.body, { assignee: req.user._id });
-    const todo = await Todo.findOneAndUpdate(
-      { _id },
-      { $set: todoPicker(req.body) }
-    );
-    if (!todo) throw NotFoundError(_id);
-    res.json(todo);
+    Object.assign(req.requestedDoc, { ...todoPicker(req.body) });
+    const newDoc = await req.requestedDoc.save();
+    res.json(newDoc);
   }
 );
 
@@ -71,13 +66,12 @@ router.delete(
   "/:id",
   validateMongoId.fromParams("id"),
   authenticate,
-  authorizeTodoOwner("user._id"),
+  authorizeTodoOwner("params.id"),
   async (req, res, next) => {
-    const _id = req.params.id;
     const todoData = pick(["deleted"])(req.body);
-    const todo = await Todo.findOneAndDelete({ _id }, { $set: todoData });
-    if (!todo) throw NotFoundError(_id);
-    res.json(todo);
+    Object.assign(req.requestedDoc, { ...todoData });
+    const newDoc = await req.requestedDoc.save();
+    res.json(newDoc);
   }
 );
 

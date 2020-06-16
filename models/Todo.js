@@ -35,11 +35,13 @@ const todoSchema = new Schema({
   history: { type: [historySchema], default: [] },
 });
 
-const Todo = mongoose.model("Todo", todoSchema);
 todoSchema.pre("save", function (next) {
-  const { state, assignee } = this._doc;
+  debugger;
+  const { assignee } = this._doc;
+  const state = this.isNew ? TODO : this._doc.state;
   this._doc.history.push({ state, assignee });
   next();
 });
+const Todo = mongoose.model("Todo", todoSchema);
 
 module.exports = Todo;
