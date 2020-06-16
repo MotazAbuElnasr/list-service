@@ -1,4 +1,4 @@
-const { get } = require("../helpers/generalHelpers");
+const { get } = require("verylodash");
 const { AuthorizationError } = require("../errors/ErrorsFactory")();
 const errorFactory = require("../errors/ErrorsFactory");
 module.exports = ({ Model, userIdPath }) => (docIdPathFromReq) => async (

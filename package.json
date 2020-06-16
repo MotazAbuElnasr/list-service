@@ -15,7 +15,8 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.18",
     "morgan": "~1.9.1",
-    "sanitize": "^2.1.0"
+    "sanitize": "^2.1.0",
+    "verylodash": "git+https://github.com/MotazAbuElnasr/verylodash.git"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"

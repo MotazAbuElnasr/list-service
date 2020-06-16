@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { get, throwError } = require("../helpers/generalHelpers");
+const { get, throwError } = require("verylodash");
 const { UnProccessableEntityError } = require("../errors/ErrorsFactory")();
 
 const validateMongoId = (idSource) => ({ property, optional }) => (
